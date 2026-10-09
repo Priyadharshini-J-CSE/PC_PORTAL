@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SECE Placement Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#FAF9F7;--card:#fff;--t:#17151A;--t2:#55515A;--o:#C6531B;--oh:#A94314;--b:#E7E1DC;--mu:#F4F1ED;--grid:rgba(90,78,67,.075);--ok:#3f7d4e;--warn:#a8741a;--err:#b3412f;--sh:0 1px 2px rgba(23,21,26,.05),0 8px 24px rgba(23,21,26,.06);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--t);font-size:15px;line-height:1.55;background-color:var(--bg);background-image:linear-gradient(to right,var(--grid) 1px,transparent 1px),linear-gradient(to bottom,var(--grid) 1px,transparent 1px);background-size:42px 42px;min-height:100vh}
+body.in{background-image:linear-gradient(to right,rgba(90,78,67,.03) 1px,transparent 1px),linear-gradient(to bottom,rgba(90,78,67,.03) 1px,transparent 1px)}
+body.in header{display:none}
+h1,h2,h3{letter-spacing:-.02em;line-height:1.2}
+h3{margin:28px 0 10px;font-size:1.2rem}
+header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 32px;border-bottom:1px solid var(--b);background:rgba(250,249,247,.92);position:sticky;top:0;z-index:5}
+.logo,.brand{font-weight:800;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;gap:2px}.logo svg,.brand svg{color:var(--o)}
+nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.nb{background:transparent;color:var(--t2);border:0;font-weight:500}.nb:hover{color:var(--t);background:var(--mu)}.nb.on{color:var(--o)}.nb.cta{background:var(--o);color:#fff}.nb.cta:hover{background:var(--oh);color:#fff}
+main{max-width:1180px;margin:0 auto;padding:32px 24px}
+body.in main{max-width:none;padding:0}
+.box,.card{background:var(--card);border:1px solid var(--b);border-radius:16px;padding:22px;box-shadow:var(--sh)}
+.box p{color:var(--t2);margin:6px 0 12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.card{cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s}.card:hover{transform:translateY(-3px);border-color:var(--o)}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--b);border-radius:9px;font:inherit;background:#fff;color:var(--t)}
+input:focus,select:focus,textarea:focus,button:focus-visible,.card:focus-visible{outline:2px solid var(--o);outline-offset:1px;border-color:var(--o)}
+label{font-size:.8rem;font-weight:600;display:block;margin:12px 0 5px;color:var(--t2)}
+button{background:var(--o);color:#fff;border:1px solid var(--o);padding:9px 16px;border-radius:11px;font:inherit;font-weight:600;cursor:pointer;transition:background .15s}
+button:hover{background:var(--oh)}
+button.s{background:#fff;color:var(--t);border:1px solid var(--b)}button.s:hover{background:var(--mu)}
+button.d{background:#fff;color:var(--err);border:1px solid var(--b);padding:4px 9px}button.d:hover{background:#fbeeea}
+svg.svg-inline--fa{height:1em;vertical-align:-.125em;margin-right:7px}button.d svg{margin:0}
+.tw{overflow-x:auto;background:#fff;border:1px solid var(--b);border-radius:14px;margin-top:10px;box-shadow:var(--sh)}
+table{border-collapse:collapse;width:100%;font-size:.85rem;white-space:nowrap}
+th{background:var(--mu);color:var(--t2);padding:11px 14px;text-align:left;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0}
+td{padding:11px 14px;border-bottom:1px solid var(--b)}tr:hover td{background:#FDFBF9}tr:last-child td{border-bottom:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:0 16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0}.row input{max-width:280px}
+.msg{color:var(--err);font-size:.85rem;margin-top:10px}.ok{color:var(--ok)}
+.tag{display:inline-block;background:#FBEDE5;color:var(--o);border-radius:999px;padding:2px 11px;font-weight:600;font-size:.75rem}
+.round{background:var(--mu);border-left:3px solid var(--o);padding:8px 12px;margin:8px 0;border-radius:8px;white-space:pre-wrap}
+a{color:var(--o)}
+.hl{color:var(--o)}
+input[type=checkbox]{width:auto;accent-color:var(--o);transform:scale(1.2)}.round.f{white-space:normal}th.sr{cursor:pointer;user-select:none}td.ed{cursor:cell}
+.hero2{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center;padding:36px 0 56px}
+.hero2 h1{font-size:clamp(2.2rem,5vw,3.4rem);font-weight:800;margin:0 0 16px}
+.hero2 p.lead{font-size:1.1rem;color:var(--t2);max-width:520px}
+.trust{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;color:var(--t2);font-size:.85rem}
+.pv{padding:26px;border-radius:20px}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.mini div{background:var(--mu);border-radius:12px;padding:14px}.mini b{display:block;font-size:1.6rem}.mini span{font-size:.78rem;color:var(--t2)}
+.bar{margin:10px 0;font-size:.8rem;color:var(--t2)}.bar i{display:block;height:8px;border-radius:99px;background:var(--mu);margin-top:4px;overflow:hidden}.bar i u{display:block;height:100%;background:var(--o);border-radius:99px}
+.sec-t{text-align:center;margin:20px 0 22px;font-size:1.8rem}
+.step{font-size:.75rem;font-weight:700;color:var(--o)}
+.login{max-width:410px;margin:48px auto;padding:30px}.login h2{margin:14px 0 4px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.stat{padding:18px}.stat svg{color:var(--o);margin:0 0 6px;font-size:1.1rem}.stat b{display:block;font-size:1.7rem}.stat span{font-size:.8rem;color:var(--t2)}
+.shell{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.side{background:#fff;border-right:1px solid var(--b);padding:22px 14px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px}
+.side .rl{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--t2);margin:18px 10px 8px}
+.side .mi{background:transparent;color:var(--t2);border:0;text-align:left;font-weight:500;padding:10px 12px;border-radius:10px;width:100%}
+.side .mi:hover{background:var(--mu);color:var(--t)}.side .mi.on{background:#FBEDE5;color:var(--o);font-weight:600}
+.side .lo{margin-top:auto}
+.content{padding:28px 36px;min-width:0}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:22px}
+.top small{color:var(--t2)}.top h1{margin:2px 0 0;font-size:clamp(1.6rem,3vw,2.2rem);font-weight:800}
+.chip{background:#fff;border:1px solid var(--b);border-radius:999px;padding:6px 14px;font-weight:600;font-size:.85rem}
+@media(max-width:860px){.hero2{grid-template-columns:1fr;gap:28px}.shell{grid-template-columns:1fr}.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;border-right:0;border-bottom:1px solid var(--b);padding:12px}.side .rl,.side .brand{display:none}.side .mi{width:auto}.side .lo{margin:0 0 0 auto}.content{padding:20px 16px}header{padding:12px 16px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+<header><div class="logo" onclick="goHome()"><i class="fa-solid fa-bullseye"></i> SECE Placement</div><nav id="nav"></nav></header>
+<main id="app"></main>
+<script>
+const PASS='Sece@2026';
+const ROLLS=[];for(let i=141;i<=207;i++)ROLLS.push('24CS'+i);['304','310','313','318','319','320'].forEach(x=>ROLLS.push('24CS'+x));
+const COLS=[['roll','Roll No.'],['name','Name'],['skills','Technical Skills'],['mobile','Mobile'],['hostel','Hostel/Day'],['year','Year'],['regno','Register No.'],['dept','Dept'],['gender','Gender'],['dob','DOB'],['itcore','IT/Core'],['transport','Transport'],['p10','10th %'],['p12','12th %'],['diploma','Diploma %'],['cgpa','CGPA'],['arrHist','Arrears History'],['arrStand','Standing Arrears'],['dmail','Domain Mail'],['pmail','Personal Mail'],['resume','Resume'],['video','1-Min Video'],['portfolio','Portfolio'],['domain','Interested Domain'],['address','Address'],
+['ihP','Int. Hack Part.'],['ihW','Int. Hack Won'],['ehP','Ext. Hack Part.'],['ehW','Ext. Hack Won'],['eoP','Ext. Online Part.'],['eoW','Ext. Online Won'],['intern','Ext. Intern'],['iPlace','Intern Place'],['iMode','Intern Mode'],['iStip','Stipend'],['cert','Prof. Cert'],['certLink','Cert Link']];
+const EDIT=[['resume','Resume link'],['portfolio','Portfolio link'],['video','1-minute video link'],['domain','Interested domain'],['cgpa','CGPA','number'],['ihP','Internal hackathon participated','number'],['ihW','Internal hackathon won','number'],['ehP','External hackathon participated','number'],['ehW','External hackathon won','number'],['eoP','External online hackathon participated','number'],['eoW','External online hackathon won','number'],['intern','External intern attended',['No','Yes']],['iPlace','Intern place'],['iMode','Intern mode',['','Online','Offline','Hybrid']],['iStip','Stipend',['','Yes','No']],['cert','Professional certificate',['No','Yes']],['certLink','Professional certificate link']];
+const LC=[['roll','Roll No.'],['name','Name'],['user','LeetCode ID'],['gr','Global Rank'],['cr','Contest Rank'],['ca','Contests Attended'],['tot','Total Solved'],['e','Easy'],['m','Medium'],['h','Hard']];
+const LG=[['name','Student Name'],['roll','Roll No.'],['paid','Paid?'],['amt','Amount'],['exam','Exam Status'],['slot','Slot'],['res','Result']];
+let DB,S=null,tab='',mode='login',portal='',msg='';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=id=>document.getElementById(id);
+function save(){try{localStorage.setItem('sece_pp',JSON.stringify(DB))}catch(e){}}
+function seed(){
+ DB={users:{pc:[{email:'pc@sece.ac.in',pw:'pc'}],faculty:[{email:'faculty@sece.ac.in',pw:'faculty'}]},spw:{},st:{},lc:{},iv:[],lg:[]};
+ ROLLS.forEach((r,i)=>DB.st[r]={roll:r,name:'Student '+r,dept:'CSE',year:'III',intern:'No',cert:'No',ihP:0,ihW:0,ehP:0,ehW:0,eoP:0,eoW:0});
+ const d1=`Arun Kumar S|24CS141|C, C++, Java, SQL|9000000001|Hostel|7241001401|Male|2005-02-14|IT|College Bus|91.20|94.50|N/A|9.10|0|0|arun.mock@sece.ac.in|arun.mock@example.com|Full Stack Development|Coimbatore, Tamil Nadu
+Priya Devi R|24CS142|Python, HTML, CSS, JavaScript|9000000002|Dayscholar|7241001402|Female|2005-06-21|IT|Own Transport|95.00|96.20|N/A|9.35|0|0|priya.mock@sece.ac.in|priya.mock@example.com|AI / Machine Learning|Tiruppur, Tamil Nadu
+Karthik M|24CS143|Java, DSA, MySQL|9000000003|Hostel|7241001403|Male|2004-11-09|Core|College Bus|88.40|90.10|N/A|8.75|1|0|karthik.mock@sece.ac.in|karthik.mock@example.com|Java Development|Erode, Tamil Nadu
+Nithya S|24CS144|Python, Machine Learning|9000000004|Dayscholar|7241001404|Female|2005-01-30|IT|College Bus|93.60|95.80|N/A|9.45|0|0|nithya.mock@sece.ac.in|nithya.mock@example.com|Data Science|Coimbatore, Tamil Nadu
+Sanjay Kumar P|24CS145|C++, DSA, MongoDB|9000000005|Hostel|7241001405|Male|2005-04-17|Core|Own Transport|89.50|91.00|N/A|8.90|0|0|sanjay.mock@sece.ac.in|sanjay.mock@example.com|Cybersecurity|Pollachi, Tamil Nadu`;
+ d1.split('\n').forEach(l=>{const a=l.split('|'),k=['name','roll','skills','mobile','hostel','regno','gender','dob','itcore','transport','p10','p12','diploma','cgpa','arrHist','arrStand','dmail','pmail','domain','address'],o=DB.st[a[1]];k.forEach((x,i)=>o[x]=a[i]);o.resume='https://example.com/resume/'+a[1];o.video='https://example.com/video/'+a[1];o.portfolio='https://example.com/portfolio/'+a[1]});
+ Object.assign(DB.st['24CS141'],{cgpa:8.865,ihP:7,ihW:1,ehP:1,eoP:5});Object.assign(DB.st['24CS142'],{cgpa:8.23,ihP:2,ehP:4,intern:'Yes',iPlace:'Zoho',iMode:'Offline',iStip:'Yes'});
+ DB.lc['24CS141']={roll:'24CS141',user:'arun_k',gr:152340,cr:48210,ca:12,tot:410,e:180,m:200,h:30};
+ DB.lg.push({name:'Arun Kumar S',roll:'24CS141',paid:'Yes',amt:1500,exam:'Completed',slot:'10 AM',res:'Pass'});
+}
+try{DB=JSON.parse(localStorage.getItem('sece_pp'))}catch(e){}
+if(!DB||!DB.st)seed();
+const ro=()=>S&&S.role==='faculty';
+function csv(t){const r=[];let row=[],c='',q=false;for(let i=0;i<t.length;i++){const ch=t[i];if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}else if(ch=='"')q=true;else if(ch==','){row.push(c);c=''}else if(ch=='\n'||ch=='\r'){if(ch=='\r'&&t[i+1]=='\n')i++;row.push(c);r.push(row);row=[];c=''}else c+=ch}
+ if(c||row.length){row.push(c);r.push(row)}return r.filter(x=>x.some(y=>y.trim()))}
+function dl(name,rows){const t=rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/csv'}));a.download=name;a.click()}
+
+const ic=n=>`<i class="fa-solid fa-${n}"></i>`;
+let sel=false;
+const RN={pc:'PC Portal',faculty:'Faculty Portal',student:'Student Portal'};
+const TITLES={dash:'Dashboard',students:'Students',leet:'LeetCode',iv:'Post-Interview Inquiry',lg:'Lingua Skills',profile:'My Profile',form:'Interview Experiences'};
+const menu=()=>S.role==='student'?[['dash','gauge','Dashboard'],['profile','id-card','My Profile'],['form','comments','Interview Experiences']]:[['dash','gauge','Dashboard'],['students','users','Students'],['leet','code','LeetCode'],['iv','comments','Post-Interview'],['lg','language','Lingua Skills']];
+function render(){
+ document.body.classList.toggle('in',!!S);
+ $('nav').innerHTML=S?'':navHtml();
+ if(!S){$('app').innerHTML=portal?authView():sel?select():landing();return}
+ const body=tab==='dash'?dash():S.role==='student'?(tab==='profile'?sProfile():sForm()):({students:vStudents,leet:vLeet,iv:vIv,lg:vLg}[tab]||vStudents)();
+ $('app').innerHTML=`<div class="shell"><aside class="side"><div class="brand">${ic('bullseye')}SECE Placement</div><div class="rl">${RN[S.role]}</div>${menu().map(m=>`<button class="mi ${tab==m[0]?'on':''}" onclick="tab='${m[0]}';render()">${ic(m[1])}${m[2]}</button>`).join('')}<button class="s lo" onclick="logout()">${ic('right-from-bracket')}Logout</button></aside>
+ <section class="content"><div class="top"><div><small>${RN[S.role]}</small><h1>${TITLES[tab]||''}</h1></div><div class="chip">${ic('user')}${esc(S.id)}</div></div>${ro()&&tab!=='dash'?'<p><span class="tag">'+ic('eye')+'View only</span></p>':''}${body}</section></div>`}
+const kp=(i,v,l)=>`<div class="box stat">${ic(i)}<b>${v}</b><span>${l}</span></div>`;
+const stg=(h,a)=>`<h3>${h}</h3><div class="stats">${a.join('')}</div>`;
+const pct=(a,b)=>b?Math.round(a/b*100)+'%':'0%';
+const SA=()=>Object.values(DB.st),nm=r=>(DB.st[r]||{}).name||r;
+const lst=a=>a.length?`<ul style="margin:8px 0 0;padding-left:18px">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`:'<p style="margin:8px 0 0">Nothing to show yet.</p>';
+const pan=(t,h)=>`<div class="box"><b>${t}</b>${h}</div>`;
+const two=(a,b)=>`<div class="cards" style="margin-top:16px">${a}${b}</div>`;
+const go=(t,l,i)=>`<button class="s" onclick="tab='${t}';render()">${ic(i)}${l}</button>`;
+const bars=(o)=>{const e=Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,5),m=Math.max(1,...e.map(x=>x[1]));return e.length?e.map(x=>`<div class="bar">${esc(x[0])} · ${x[1]}<i><u style="width:${x[1]/m*100}%"></u></i></div>`).join(''):'<p style="margin:8px 0 0">No data yet.</p>'};
+function dash(){return S.role==='pc'?dashPC():S.role==='faculty'?dashFac():dashStu()}
+function dashPC(){const A=SA(),L=Object.values(DB.lc),g=DB.lg,paid=g.filter(isPaid),done=g.filter(isDone),pend=paid.filter(r=>!isDone(r)),hv=k=>A.filter(x=>x[k]).length;
+ const noLc=A.filter(x=>!DB.lc[x.roll]).length,noRes=A.filter(x=>!x.resume).length,noVid=A.filter(x=>!x.video).length;
+ return `<div class="box"><b>Welcome, Placement Coordinator</b><p style="margin-bottom:0">Track data coverage and see what still needs your attention.</p></div>
+ ${stg('Data coverage',[kp('users',A.length,'Students'),kp('code',pct(L.length,A.length),'LeetCode IDs added'),kp('id-card',pct(hv('resume'),A.length),'Resumes submitted'),kp('video',pct(hv('video'),A.length),'1-min videos'),kp('comments',DB.iv.length,'Interview sheets')])}
+ ${stg('Lingua Skills',[kp('indian-rupee-sign',paid.length,'Paid'),kp('circle-check',done.length,'Exams completed'),kp('hourglass-half',pend.length,'Paid, yet to complete')])}
+ ${two(pan('Pending actions',lst([noLc+' students without a LeetCode ID',noRes+' students without a resume link',noVid+' students without a video link',pend.length+' paid students yet to complete Lingua exam'])+'<div class="row">'+go('leet','Add LeetCode IDs','code')+go('lg','Lingua Skills','language')+'</div>'),pan('Latest interview submissions',lst(DB.iv.slice(-5).reverse().map(v=>`${esc(nm(v.roll))} - ${esc(v.company)} (${esc(v.status)})`))+'<div class="row">'+go('iv','View all','comments')+'</div>'))}`}
+function dashFac(){const A=SA(),L=Object.values(DB.lc).filter(x=>+x.tot>0).sort((a,b)=>b.tot-a.tot).slice(0,5),cg=A.map(x=>+x.cgpa).filter(x=>x>0),dom={},co={};
+ A.forEach(x=>{if(x.domain)dom[x.domain]=(dom[x.domain]||0)+1});DB.iv.forEach(v=>co[v.company]=(co[v.company]||0)+1);
+ const placed=new Set(DB.iv.filter(v=>v.status==='Placed').map(v=>v.roll)).size,wins=A.reduce((a,x)=>a+(+x.ihW||0)+(+x.ehW||0)+(+x.eoW||0),0),top=A.filter(x=>+x.cgpa>0).sort((a,b)=>b.cgpa-a.cgpa).slice(0,5);
+ return `<div class="box"><b>Welcome, Faculty</b><p style="margin-bottom:0">Academic and placement-readiness overview of the class. View-only.</p></div>
+ ${stg('Class performance',[kp('chart-line',cg.length?(cg.reduce((a,b)=>a+b,0)/cg.length).toFixed(2):'N/A','Average CGPA'),kp('triangle-exclamation',A.filter(x=>+x.arrStand>0).length,'Students with standing arrears'),kp('trophy',wins,'Hackathons won'),kp('briefcase',A.filter(x=>x.intern==='Yes').length,'External interns'),kp('circle-check',placed,'Students reported placed')])}
+ ${two(pan('Top LeetCode solvers',lst(L.map(x=>`${esc(nm(x.roll))} - ${x.tot} solved`))),pan('Top CGPA',lst(top.map(x=>`${esc(x.name)} - ${x.cgpa}`))))}
+ ${two(pan('Interested domains',bars(dom)),pan('Companies in interview reports',bars(co)))}`}
+function dashStu(){const s=DB.st[S.id],l=DB.lc[S.id],my=DB.iv.filter(v=>v.roll===S.id),lr=DB.lg.find(x=>x.roll===S.id);
+ const K=[['resume','Resume link'],['portfolio','Portfolio link'],['video','1-minute video'],['domain','Interested domain'],['cgpa','CGPA'],['certLink','Certificate link']],miss=K.filter(k=>!s[k[0]]);
+ return `<div class="box"><b>Welcome, ${esc(s.name)}</b><p style="margin-bottom:0">${esc(s.roll)} · ${esc(s.dept||'')} · Keep your profile complete and share your interview experiences.</p></div>
+ ${stg('My progress',[kp('circle-check',pct(K.length-miss.length,K.length),'Profile completeness'),kp('comments',my.length,'My interview sheets'),kp('code',l&&l.tot?l.tot:'N/A','LeetCode solved'),kp('trophy',(+s.ihW||0)+(+s.ehW||0)+(+s.eoW||0),'Hackathons won')])}
+ ${two(pan('To complete in my profile',lst(miss.map(m=>m[1]))+'<div class="row">'+go('profile','Edit profile','id-card')+go('form','Add interview experience','comments')+'</div>'),pan('LeetCode',l?lst(['ID: '+esc(l.user||'-'),'Global rank: '+esc(l.gr||'-'),'Contest rank: '+esc(l.cr||'-'),'Easy / Medium / Hard: '+esc(l.e||'-')+' / '+esc(l.m||'-')+' / '+esc(l.h||'-')]):'<p style="margin:8px 0 0">Your LeetCode ID has not been added by the PC yet.</p>'))}
+ ${pan('Lingua Skills',lr?lst(['Paid: '+esc(lr.paid),'Exam: '+esc(lr.exam),'Slot: '+esc(lr.slot||'-'),'Result: '+esc(lr.res||'-')]):'<p style="margin:8px 0 0">No Lingua Skills record yet.</p>').replace('class="box"','class="box" style="margin-top:16px"')}`}
+function landing(){const n=Object.keys(DB.st).length,L=Object.values(DB.lc),avg=L.length?Math.round(L.reduce((a,b)=>a+(+b.tot||0),0)/L.length):0,sum=k=>L.reduce((a,b)=>a+(+b[k]||0),0),mx=Math.max(sum('e'),sum('m'),sum('h'),1);
+ const bar=(l,k)=>`<div class="bar">${l} · ${sum(k)}<i><u style="width:${sum(k)/mx*100}%"></u></i></div>`;
+ return `<section class="hero2"><div><span class="tag">${ic('graduation-cap')}Placement Management Platform</span><h1 style="margin-top:16px">Your Career Journey, <span class="hl">All in One Place</span></h1>
+ <p class="lead">A centralized placement management platform for students, placement coordinators, and faculty to manage student profiles, coding progress, interview experiences, documents, and placement readiness.</p>
+ <div class="row"><button onclick="goSel()">Explore Portal</button><button class="s" onclick="goHow()">How It Works</button></div>
+ <div class="trust"><span>${ic('shield-halved')}Role-based portals</span><span>${ic('code')}LeetCode tracking</span><span>${ic('comments')}Interview insights</span></div></div>
+ <div class="box pv"><div style="display:flex;justify-content:space-between;align-items:center"><b>Placement snapshot</b><span class="tag">Live workspace data</span></div>
+ <div class="mini"><div><b>${n}</b><span>Students</span></div><div><b>${L.length}</b><span>LeetCode records</span></div><div><b>${avg}</b><span>Avg problems solved</span></div><div><b>${DB.iv.length}</b><span>Interview experiences</span></div></div>
+ <b style="font-size:.85rem">Problems solved by difficulty</b>${bar('Easy','e')}${bar('Medium','m')}${bar('Hard','h')}</div></section>
+ <section id="how"><h2 class="sec-t">How It Works</h2><div class="cards">${[['1','Choose your portal','Student, PC or Faculty, each with its own login and menu.'],['2','Maintain your data','Students update their profile and share interview experiences; PC manages LeetCode and Lingua data.'],['3','Track readiness','Faculty and PC monitor progress through searchable, exportable tables.']].map(x=>`<div class="box"><div class="step">STEP ${x[0]}</div><b>${x[1]}</b><p style="margin-bottom:0">${x[2]}</p></div>`).join('')}</div>
+ <h2 class="sec-t" style="margin-top:48px">What's inside</h2><div class="cards">${[['ranking-star','LeetCode tracker','Global rank, contest rank, contests attended, total solved, easy, medium and hard.'],['comments','Post-Interview Inquiry','Company, rounds, questions per round, placed or not, and experience.'],['language','Lingua Skills','Payment, exam status, slot and result per student.'],['file-csv','CSV import / export','Merge student master data and hackathon data from CSV files.']].map(x=>`<div class="box"><b>${ic(x[0])}${x[1]}</b><p style="margin-bottom:0">${x[2]}</p></div>`).join('')}</div></section>`}
+function select(){return `<h2 class="sec-t" style="font-size:2.2rem">Choose your <span class="hl">portal</span></h2><p style="text-align:center;color:var(--t2);margin-bottom:28px">Each portal has its own login and permissions.</p><div class="cards">${[['student','user-graduate','Student Portal','Update your profile and submit interview experiences.'],['pc','building-user','PC Portal','Manage LeetCode, Lingua Skills and student data.'],['faculty','chalkboard-user','Faculty Portal','View-only access to class data and rankings.']].map(p=>`<div class="card" tabindex="0" onclick="openPortal('${p[0]}')" onkeydown="if(event.key=='Enter')openPortal('${p[0]}')"><div class="tag" style="font-size:1.1rem;padding:8px 12px">${ic(p[1])}</div><h2 style="margin:14px 0 4px">${p[2]}</h2><p style="color:var(--t2);margin:0 0 14px">${p[3]}</p><b class="hl">Continue ${ic('arrow-right')}</b></div>`).join('')}</div>`}
+function openPortal(p){portal=p;mode='login';msg='';sel=false;render()}
+function goHome(){portal='';sel=false;render()}
+function goSel(){portal='';sel=true;render()}
+function goHow(){portal='';sel=false;render();setTimeout(()=>{const e=$('how');e&&e.scrollIntoView({behavior:'smooth'})},50)}
+function navHtml(){return `<button class="nb ${!portal&&!sel?'on':''}" onclick="goHome()">Home</button><button class="nb" onclick="goHow()">How It Works</button><button class="nb cta" onclick="goSel()">${ic('right-to-bracket')}Portal</button>`}
+function authView(){const st=portal==='student';return `<div class="box login"><div class="brand"><i class="fa-solid fa-bullseye"></i> SECE Placement</div><h2>${portal.toUpperCase()} ${mode==='login'?'Login':'Register'}</h2>
+ <label>${st?'Roll Number':'Email'}</label><input id="a1" placeholder="${st?'24CS141':portal+'@sece.ac.in'}">
+ <label>Password</label><input id="a2" type="password" onkeydown="if(event.key=='Enter')auth()">
+ <div class="row"><button onclick="auth()">${mode==='login'?'Login':'Register'}</button><button class="s" onclick="mode=mode=='login'?'register':'login';msg='';render()">${mode==='login'?'New? Register':'Have account? Login'}</button><button class="s" onclick="portal='';render()"><i class="fa-solid fa-arrow-left"></i>Back</button></div>
+ <div class="msg">${msg}</div>${st?'<small>Default student password: '+PASS+' (use Register to set your own)</small>':''}</div>`}
+function auth(){const id=$('a1').value.trim(),pw=$('a2').value;msg='';
+ if(portal==='student'){const r=id.toUpperCase();if(!DB.st[r])msg='Roll number not allowed for this class.';
+  else if(mode==='register'){if(pw.length<4)msg='Password min 4 chars.';else{DB.spw[r]=pw;save();S={role:'student',id:r};tab='profile'}}
+  else if(pw===(DB.spw[r]||PASS)){S={role:'student',id:r};tab='profile'}else msg='Wrong password.'}
+ else{const u=DB.users[portal],e=id.toLowerCase();
+  if(mode==='register'){if(!e.includes('@')||pw.length<2)msg='Enter valid email & password.';else if(u.find(x=>x.email===e))msg='Already registered.';else{u.push({email:e,pw});save();S={role:portal,id:e};tab='students'}}
+  else if(u.find(x=>x.email===e&&x.pw===pw)){S={role:portal,id:e};tab='students'}else msg='Invalid credentials.'}
+ render()}
+function logout(){S=null;portal='';sel=false;render()}
+
+/* staff */
+function table(cols,rows,act){return `<div class="tw"><table><tr>${cols.map(c=>`<th>${c[1]}</th>`).join('')}${act?'<th></th>':''}</tr>${rows.map((r,i)=>`<tr>${cols.map(c=>`<td>${/^https?:/.test(r[c[0]]||'')?`<a href="${esc(r[c[0]])}" target="_blank">link</a>`:esc(r[c[0]])}</td>`).join('')}${act?`<td>${act(r,i)}</td>`:''}</tr>`).join('')||'<tr><td>No data</td></tr>'}</table></div>`}
+const q=()=>(window.Q||'').toLowerCase();
+function search(){return `<div class="row"><input placeholder="Search..." value="${esc(window.Q||'')}" oninput="Q=this.value;renderKeep(this)"></div>`}
+function renderKeep(el){const p=el.selectionStart;render();const n=document.querySelector('.row input');n.focus();n.setSelectionRange(p,p)}
+const match=o=>!q()||JSON.stringify(Object.values(o)).toLowerCase().includes(q());
+function vStudents(){const rows=Object.values(DB.st).filter(match);
+ return `${search()}<div class="row"><button class="s" onclick="dl('students.csv',[COLS.map(c=>c[1])].concat(Object.values(DB.st).map(r=>COLS.map(c=>r[c[0]]))))"><i class="fa-solid fa-download"></i>Export CSV</button>
+ ${ro()?'':'<label style="margin:0">Import CSV (Data1 / Data2 format):</label><input type="file" accept=".csv" style="max-width:240px" onchange="importCsv(this)">'}</div>
+ <b>${rows.length}</b> students${table(COLS,rows)}`}
+function importCsv(el){const f=el.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const R=csv(rd.result),h=R[0].map(x=>x.trim());let n=0;
+ const m1={'Name with Initial After Name':'name','Roll No.':'roll','Technical Skills Strength':'skills','Mobile No.':'mobile','Hostel/Day Scholar':'hostel','Year':'year','Register No.':'regno','Dept':'dept','Gender':'gender','DOB':'dob','IT/Core':'itcore','Transport':'transport','10th Percentage':'p10','12th Percentage':'p12','Diploma Percentage':'diploma','CGPA out of 10':'cgpa','History of Arrears':'arrHist','Standing Arrears':'arrStand','Domain Mail ID':'dmail','Personal Mail ID':'pmail','Resume':'resume','1-Minute Video for Resume':'video','Portfolio Link':'portfolio','Interested Domain':'domain','Address':'address'};
+ const m2={'CGPA':'cgpa','No of Internal Hackathon (Participated)':'ihP','No of Internal Hackathon (Won)':'ihW','No of External Hackathon (Participated)':'ehP','No of External Hackathon (Won)':'ehW','No of External Online Hackathon (Participated)':'eoP','No of External Online Hackathon (Won)':'eoW','External Intern Attended':'intern','Professional Certificate':'cert','Professional Certificate (Drive Link)':'certLink'};
+ const d1=h.includes('Roll No.'),M=d1?m1:m2;
+ R.slice(1).forEach(r=>{const o={};h.forEach((k,i)=>{if(M[k])o[M[k]]=(r[i]||'').trim()});
+  let t;if(d1)t=DB.st[(r[h.indexOf('Roll No.')]||'').trim().toUpperCase()];
+  else{const rg=(r[h.indexOf('Register No.')]||'').trim(),nm=(r[h.indexOf('Name with Initial After Name')]||'').trim().toLowerCase();t=Object.values(DB.st).find(s=>s.regno==rg||(s.name||'').toLowerCase()==nm)}
+  if(t){Object.assign(t,o);n++}});
+ save();alert(n+' students updated (only allowed class rolls are matched).');render()};rd.readAsText(f)}
+function vLeet(){const rows=Object.values(DB.lc).map(r=>({...r,name:(DB.st[r.roll]||{}).name})).filter(match);
+ return `${ro()?'':`<div class="box"><b>Bulk add LeetCode IDs</b><br><small>Upload an Excel file (.xlsx, .xls or .csv) with columns: <b>Roll No., LeetCode ID</b>. Ranks and solved counts will be fetched later.</small><div class="row"><input type="file" accept=".xlsx,.xls,.csv" aria-label="Excel file" onchange="lcFile(this)"><button class="s" onclick="dl('leetcode-template.csv',[['Roll No.','LeetCode ID'],['24CS141','arun_k']])">${ic('download')}Download template</button></div></div>
+ <details class="box" style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">Add single student</summary><div class="grid"><div><label for="l_roll">Roll No.</label><select id="l_roll"><option value="">--</option>${ROLLS.map(r=>`<option>${r}</option>`).join('')}</select></div><div><label for="l_id">LeetCode ID</label><input id="l_id" placeholder="username"></div></div><div class="row"><button onclick="lcAdd()">Add / Update</button></div></details>`}
+ ${search()}${table(LC,rows,ro()?null:r=>`<button class="d" onclick="delete DB.lc['${r.roll}'];save();render()"><i class="fa-solid fa-xmark"></i></button>`)}`}
+function lcFile(el){const f=el.files[0];if(!f)return;if(typeof XLSX==='undefined')return alert('Excel reader failed to load. Check your connection.');
+ const rd=new FileReader();rd.onload=()=>{let rows;try{const wb=XLSX.read(rd.result,{type:'array'});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''})}catch(e){return alert('Could not read this file.')}lcRows(rows)};rd.readAsArrayBuffer(f)}
+function lcRows(rows){let n=0,sk=0;rows.forEach(row=>{const a=row.map(x=>String(x).trim());if(!a.some(x=>x)||/roll/i.test(a[0]))return;const r=a[0].toUpperCase();if(!DB.st[r]||!a[1]){sk++;return}
+ DB.lc[r]=Object.assign(DB.lc[r]||{},{roll:r,user:a[1].replace(/\/+$/,'').split('/').pop()});n++});save();alert(n+' saved'+(sk?', '+sk+' skipped (roll not in class or ID missing)':''));render()}
+function lcAdd(){const r=$('l_roll').value,u=$('l_id').value.trim();if(!r||!u)return alert('Select roll number and enter LeetCode ID');DB.lc[r]=Object.assign(DB.lc[r]||{},{roll:r,user:u.replace(/\/+$/,'').split('/').pop()});save();render()}
+function vIv(){const rows=DB.iv.filter(match);
+ return `${search()}<b>${rows.length}</b> submissions`+rows.map(v=>`<div class="box" style="margin:10px 0"><b>${esc(v.company)}</b> <span class="tag">${esc(v.status)}</span> — ${esc(v.roll)} ${esc((DB.st[v.roll]||{}).name)} · ${v.rounds.length} round(s)
+ ${roundsHtml(v.rounds)}<div><b>Experience:</b> ${esc(v.exp)}</div></div>`).join('')}
+let lgS={k:'',d:1};
+const isDone=r=>r.exam==='Completed',isPaid=r=>/^(yes|y|paid|true|1)$/i.test(String(r.paid||'').trim());
+function vLg(){const all=DB.lg,paid=all.filter(isPaid),done=all.filter(isDone),pend=paid.filter(r=>!isDone(r)),amt=paid.reduce((a,r)=>a+(+r.amt||0),0);
+ let rows=all.map((r,i)=>({r,i})).filter(x=>match(x.r));
+ if(lgS.k)rows.sort((a,b)=>{const x=a.r[lgS.k]??'',y=b.r[lgS.k]??'';return(x===''||y===''||isNaN(x)||isNaN(y)?String(x).localeCompare(String(y)):x-y)*lgS.d});
+ const ed=k=>ro()?'':` class="ed" ondblclick="lgEdit(this,%I,'${k}')"`;
+ return `<div class="stats">${[['circle-check','Total completed',done.length],['indian-rupee-sign','Total paid',paid.length+' (Rs. '+amt+')'],['hourglass-half','Paid but not taken exam',pend.length],['user-xmark','Not paid',all.length-paid.length]].map(x=>`<div class="box stat">${ic(x[0])}<b>${x[2]}</b><span>${x[1]}</span></div>`).join('')}</div>
+ ${ro()?'':`<div class="box" style="margin-top:16px"><b>Bulk add Lingua Skills</b><br><small>Upload an Excel file (.xlsx, .xls or .csv) with columns: <b>Student Name, Roll No., Paid?, Amount, Exam Status, Slot, Result</b>. Existing roll numbers are updated.</small><div class="row"><input type="file" id="lgf" accept=".xlsx,.xls,.csv" aria-label="Excel file" onchange="lgFile(this)"><button class="s" onclick="dl('lingua-template.csv',[LG.map(c=>c[1]),['Arun Kumar S','24CS141','Yes',1500,'Completed','10 AM','Pass']])">${ic('download')}Download template</button></div></div>
+ <<details class="box" style="margin-top:12px"><summary style="cursor:pointer;font-weight:600">Add single record</summary><div class="grid">
+ <div><label>Roll No.</label><select id="g_roll" onchange="$('g_name').value=(DB.st[this.value]||{}).name||''"><option value="">--</option>${ROLLS.map(r=>`<option>${r}</option>`).join('')}</select></div>
+ <div><label>Student Name</label><input id="g_name"></div><div><label>Paid?</label><select id="g_paid"><option>Yes</option><option>No</option></select></div>
+ <div><label>Amount</label><input id="g_amt" type="number"></div><div><label>Exam Status</label><select id="g_exam"><option>Pending</option><option>Completed</option></select></div>
+ <div><label>Slot</label><input id="g_slot" placeholder="10 AM"></div><div><label>Result</label><input id="g_res"></div></div><div class="row"><button onclick="lgAdd()">Add</button></div></details>`}
+ ${search()}<small>${ro()?'':'Double-click a cell to edit. Tick the box to mark the exam completed. '}Click a column title to sort.</small>
+ <div class="tw"><table><tr>${LG.map(c=>`<th class="sr" onclick="lgSort('${c[0]}')">${c[1]} ${lgS.k==c[0]?ic(lgS.d>0?'arrow-up':'arrow-down'):''}</th>`).join('')}${ro()?'':'<th></th>'}</tr>
+ ${rows.map(({r,i})=>`<tr>${LG.map(c=>c[0]=='exam'?`<td><label style="margin:0;display:flex;gap:8px;align-items:center;font-weight:500;color:var(--t)"><input type="checkbox" ${isDone(r)?'checked':''} ${ro()?'disabled':''} onchange="lgTog(${i},this.checked)">${isDone(r)?'Completed':'Pending'}</label></td>`:`<td${ed(c[0]).replace('%I',i)}>${esc(r[c[0]])}</td>`).join('')}${ro()?'':`<td><button class="d" aria-label="Delete" onclick="lgDel(${i})">${ic('xmark')}</button></td>`}</tr>`).join('')||'<tr><td>No data</td></tr>'}</table></div>`}
+function lgSort(k){lgS=lgS.k==k?{k,d:-lgS.d}:{k,d:1};render()}
+function lgTog(i,v){DB.lg[i].exam=v?'Completed':'Pending';save();render()}
+function lgEdit(td,i,k){if(td.querySelector('input,select'))return;const v=DB.lg[i][k]??'',el=document.createElement(k=='paid'?'select':'input');
+ if(k=='paid'){['Yes','No'].forEach(o=>{const op=document.createElement('option');op.textContent=o;el.appendChild(op)})}else if(k=='amt')el.type='number';
+ el.value=v;td.textContent='';td.appendChild(el);el.focus();
+ el.onblur=()=>{DB.lg[i][k]=el.value;save();render()};el.onkeydown=e=>{if(e.key=='Enter')el.blur();if(e.key=='Escape'){el.onblur=null;render()}}}
+function lgFile(el){const f=el.files[0];if(!f)return;if(typeof XLSX==='undefined')return alert('Excel reader failed to load. Check your connection.');
+ const rd=new FileReader();rd.onload=()=>{let rows;try{const wb=XLSX.read(rd.result,{type:'array'});rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''})}catch(e){return alert('Could not read this file.')}lgRows(rows)};rd.readAsArrayBuffer(f)}
+function lgRows(rows){let n=0,sk=0;rows.forEach(row=>{const a=row.map(x=>String(x).trim());if(!a.some(x=>x)||/student name/i.test(a[0]))return;const r=(a[1]||'').toUpperCase();if(!DB.st[r]){sk++;return}
+ const o={name:a[0]||DB.st[r].name,roll:r,paid:/^(yes|y|paid|true|1)$/i.test(a[2])?'Yes':'No',amt:a[3]||'',exam:/^(completed?|yes|done|attended|true|1)$/i.test(a[4])?'Completed':'Pending',slot:a[5]||'',res:a[6]||''};
+ const i=DB.lg.findIndex(x=>x.roll===r);if(i>=0)DB.lg[i]=o;else DB.lg.push(o);n++});save();alert(n+' saved'+(sk?', '+sk+' skipped (roll not in class)':''));render()}
+function lgAdd(){const o={};LG.forEach(c=>o[c[0]]=$('g_'+c[0]).value);if(!o.roll)return alert('Select roll');DB.lg.push(o);save();render()}
+function lgDel(i){DB.lg.splice(i,1);save();render()}
+
+/* student */
+function sProfile(){const s=DB.st[S.id];
+ return `<div class="box"><h3 style="margin-top:0;color:var(--o)">${esc(s.name)} (${s.roll})</h3><small>You can update only these fields.</small><div class="grid">
+ ${EDIT.map(([k,l,t])=>`<div><label>${l}</label>${Array.isArray(t)?`<select id="e_${k}">${t.map(o=>`<option ${s[k]==o?'selected':''}>${o}</option>`).join('')}</select>`:`<input id="e_${k}" type="${t||'text'}" step="any" value="${esc(s[k])}">`}</div>`).join('')}</div>
+ <div class="row"><button onclick="saveProf()">Save Profile</button></div><div class="msg ok" id="pm"></div></div>`}
+function saveProf(){const s=DB.st[S.id];EDIT.forEach(([k])=>s[k]=$('e_'+k).value);save();$('pm').textContent='Saved'}
+let draft={company:'',status:'Placed',exp:'',rounds:[{qs:[''],exp:''}]};
+const roundsHtml=rs=>rs.map((r,i)=>{if(typeof r==='string')r={qs:[r],exp:''};return `<div class="round"><b>Round ${i+1}</b><ol style="margin:6px 0 6px 18px;padding:0">${(r.qs||[]).filter(x=>x).map(q=>`<li>${esc(q)}</li>`).join('')}</ol>${r.exp?`<div><b>Experience:</b> ${esc(r.exp)}</div>`:''}</div>`}).join('');
+function sForm(){const mine=DB.iv.filter(v=>v.roll===S.id);
+ return `<div class="box"><b style="font-size:1.1rem">Add Interview Experience</b><div class="grid"><div><label for="ic">Company name</label><input id="ic" value="${esc(draft.company)}" oninput="draft.company=this.value"></div><div><label for="is">Result</label><select id="is" onchange="draft.status=this.value">${['Placed','Not Placed','Result Awaited'].map(o=>`<option ${draft.status==o?'selected':''}>${o}</option>`).join('')}</select></div></div>
+ <h3>Rounds (${draft.rounds.length})</h3>${draft.rounds.map((r,i)=>`<div class="round f"><div class="row" style="justify-content:space-between;margin:0"><b>Round ${i+1}</b>${draft.rounds.length>1?`<button class="d" aria-label="Remove round" onclick="draft.rounds.splice(${i},1);render()">${ic('xmark')}</button>`:''}</div><label>Questions asked</label>${r.qs.map((q,j)=>`<div class="row" style="margin:4px 0"><input style="max-width:none;flex:1" aria-label="Question ${j+1}" placeholder="Question ${j+1}" value="${esc(q)}" oninput="draft.rounds[${i}].qs[${j}]=this.value">${r.qs.length>1?`<button class="d" aria-label="Remove question" onclick="draft.rounds[${i}].qs.splice(${j},1);render()">${ic('xmark')}</button>`:''}</div>`).join('')}<div class="row" style="margin:6px 0"><button class="s" onclick="draft.rounds[${i}].qs.push('');render()">${ic('plus')}Add Question</button></div><label>Experience for this round</label><textarea rows="2" oninput="draft.rounds[${i}].exp=this.value">${esc(r.exp)}</textarea></div>`).join('')}
+ <div class="row"><button class="s" onclick="draft.rounds.push({qs:[''],exp:''});render()">${ic('plus')}Add Round</button></div>
+ <label for="ie">Overall experience / summary</label><textarea id="ie" rows="3" oninput="draft.exp=this.value">${esc(draft.exp)}</textarea><div class="row"><button onclick="addIv()">Submit</button></div></div>
+ <h3>My submissions</h3>${mine.map(v=>`<div class="box" style="margin:10px 0"><b>${esc(v.company)}</b> <span class="tag">${esc(v.status)}</span> <button class="d" aria-label="Delete" onclick="delIv(${DB.iv.indexOf(v)})">${ic('xmark')}</button>${roundsHtml(v.rounds)}<div>${esc(v.exp)}</div></div>`).join('')||'<p>None yet.</p>'}`}
+function addIv(){const c=draft.company.trim();if(!c)return alert('Enter company name');
+ DB.iv.push({roll:S.id,company:c,status:draft.status,exp:draft.exp,rounds:draft.rounds.map(r=>({qs:r.qs.filter(x=>x.trim()),exp:r.exp}))});
+ draft={company:'',status:'Placed',exp:'',rounds:[{qs:[''],exp:''}]};save();render()}
+function delIv(i){DB.iv.splice(i,1);save();render()}
+render();
+</script></body></html>
