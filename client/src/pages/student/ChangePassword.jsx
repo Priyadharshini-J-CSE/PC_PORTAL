@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import api from '../../api/client';
+import Icon from '../../components/Icon';
 
 export default function ChangePassword() {
   const { setUser, user } = useAuth();
@@ -10,12 +11,15 @@ export default function ChangePassword() {
   const navigate = useNavigate();
   const [current, setCurrent] = useState('');
   const [next, setNext] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setError('');
     if (next.length < 8) { setError('New password must be at least 8 characters'); return; }
+    if (next !== confirm) { setError('Passwords do not match'); return; }
     setLoading(true);
     try {
       await api.post('/api/auth/student/change-password', { currentPassword: current, newPassword: next });
@@ -30,19 +34,34 @@ export default function ChangePassword() {
   }
 
   return (
-    <div style={{ maxWidth: 420, margin: '48px auto', padding: '0 24px' }}>
-      <div className="box">
-        <h2>Set Your Password</h2>
-        <p style={{ color: 'var(--t2)' }}>You must set a new password before continuing.</p>
+    <div className="auth-wrap" style={{ background: 'var(--bg)' }}>
+      <div className="auth-box">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+          <div style={{ width: 44, height: 44, background: '#FBEDE5', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--o)', fontSize: '1.2rem' }}>
+            <Icon name="id-card" />
+          </div>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>Set Your Password</div>
+            <div style={{ fontSize: '.8rem', color: 'var(--t2)' }}>SECE Placement Portal</div>
+          </div>
+        </div>
+
+        <div style={{ background: '#FBEDE5', borderRadius: 10, padding: '10px 14px', marginBottom: 16, fontSize: '.88rem' }}>
+          <Icon name="info" style={{ marginRight: 6, color: 'var(--o)' }} />
+          You must set a new password before continuing. Use the initial password provided by your PC as the current password.
+        </div>
+
         <form onSubmit={handleSubmit}>
           <label>Current (initial) password</label>
-          <input type="password" value={current} onChange={(e) => setCurrent(e.target.value)} required />
+          <input type="password" value={current} onChange={e => setCurrent(e.target.value)} required autoComplete="current-password" />
           <label>New password (min 8 characters)</label>
-          <input type="password" value={next} onChange={(e) => setNext(e.target.value)} required />
+          <input type="password" value={next} onChange={e => setNext(e.target.value)} required autoComplete="new-password" />
+          <label>Confirm new password</label>
+          <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} required autoComplete="new-password" />
           {error && <div className="msg">{error}</div>}
-          <div className="row" style={{ marginTop: 16 }}>
-            <button type="submit" disabled={loading}>{loading ? '...' : 'Set Password'}</button>
-          </div>
+          <button type="submit" disabled={loading} style={{ width: '100%', marginTop: 18, justifyContent: 'center' }}>
+            <Icon name="floppy-disk" /> {loading ? 'Saving...' : 'Set Password & Continue'}
+          </button>
         </form>
       </div>
     </div>

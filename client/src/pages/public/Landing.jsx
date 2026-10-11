@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar';
+import Icon from '../../components/Icon';
 import api from '../../api/client';
 
 export default function Landing() {
@@ -8,7 +9,7 @@ export default function Landing() {
   const [snap, setSnap] = useState(null);
 
   useEffect(() => {
-    api.get('/api/analytics/pc').then((r) => setSnap(r.data)).catch(() => {});
+    api.get('/api/analytics/pc').then(r => setSnap(r.data)).catch(() => {});
   }, []);
 
   return (
@@ -17,7 +18,7 @@ export default function Landing() {
       <main style={{ maxWidth: 1180, margin: '0 auto', padding: '32px 24px' }}>
         <section className="hero2">
           <div>
-            <span className="tag">🎓 Placement Management Platform</span>
+            <span className="tag"><Icon name="graduation-cap" style={{ marginRight: 6 }} />Placement Management Platform</span>
             <h1 style={{ marginTop: 16 }}>
               Your Career Journey,{' '}
               <span className="hl">All in One Place</span>
@@ -28,15 +29,17 @@ export default function Landing() {
               documents, and placement readiness.
             </p>
             <div className="row">
-              <button onClick={() => navigate('/portal')}>Explore Portal</button>
+              <button onClick={() => navigate('/portal')}>
+                <Icon name="right-to-bracket" /> Explore Portal
+              </button>
               <button className="s" onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth' })}>
                 How It Works
               </button>
             </div>
             <div className="trust">
-              <span>🛡 Role-based portals</span>
-              <span>⌨ LeetCode tracking</span>
-              <span>💬 Interview insights</span>
+              <span><Icon name="shield-halved" style={{ marginRight: 5 }} />Role-based portals</span>
+              <span><Icon name="code" style={{ marginRight: 5 }} />LeetCode tracking</span>
+              <span><Icon name="comments" style={{ marginRight: 5 }} />Interview insights</span>
             </div>
           </div>
 
@@ -55,7 +58,10 @@ export default function Landing() {
             ) : (
               <div className="mini">
                 {[...Array(4)].map((_, i) => (
-                  <div key={i}><div className="skeleton" style={{ height: 32, marginBottom: 6 }} /><div className="skeleton" style={{ height: 14, width: '60%' }} /></div>
+                  <div key={i}>
+                    <div className="skeleton" style={{ height: 32, marginBottom: 6 }} />
+                    <div className="skeleton" style={{ height: 14, width: '60%' }} />
+                  </div>
                 ))}
               </div>
             )}
@@ -81,13 +87,13 @@ export default function Landing() {
           <h2 className="sec-t" style={{ marginTop: 48 }}>What's inside</h2>
           <div className="cards">
             {[
-              ['⭐', 'LeetCode tracker', 'Global rank, contest rating, contests attended, total solved, easy, medium and hard.'],
-              ['💬', 'Post-Interview Inquiry', 'Company, rounds, questions per round, placed or not, and experience.'],
-              ['🌐', 'Lingua Skills', 'Payment, exam status, slot and result per student.'],
-              ['📄', 'CSV import / export', 'Merge student master data and hackathon data from CSV files.'],
+              ['ranking-star', 'LeetCode tracker',        'Global rank, contest rating, contests attended, total solved, easy, medium and hard.'],
+              ['comments',     'Post-Interview Inquiry',  'Company, rounds, questions per round, placed or not, and experience.'],
+              ['language',     'Lingua Skills',           'Payment, exam status, slot and result per student.'],
+              ['file-csv',     'CSV import / export',     'Merge student master data and hackathon data from CSV files.'],
             ].map(([icon, t, d]) => (
               <div key={t} className="box">
-                <b>{icon} {t}</b>
+                <b><Icon name={icon} style={{ marginRight: 8, color: 'var(--o)' }} />{t}</b>
                 <p style={{ marginBottom: 0 }}>{d}</p>
               </div>
             ))}

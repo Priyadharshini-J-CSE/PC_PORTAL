@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../api/client';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import StatCard from '../../components/StatCard';
+import Icon from '../../components/Icon';
 
 export default function FacultyLingua() {
   const [records, setRecords] = useState([]);
@@ -10,41 +11,36 @@ export default function FacultyLingua() {
 
   useEffect(() => {
     setLoading(true);
-    api.get('/api/lingua', { params: { search } })
-      .then((r) => setRecords(r.data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    api.get('/api/lingua', { params: { search } }).then(r => setRecords(r.data)).catch(() => {}).finally(() => setLoading(false));
   }, [search]);
 
-  const paid = records.filter((r) => r.paid === 'Yes');
-  const done = records.filter((r) => r.examStatus === 'Completed');
-  const paidNotDone = paid.filter((r) => r.examStatus !== 'Completed');
+  const paid = records.filter(r => r.paid === 'Yes');
+  const done = records.filter(r => r.examStatus === 'Completed');
+  const paidNotDone = paid.filter(r => r.examStatus !== 'Completed');
 
   return (
     <>
       <div className="top"><div><small>Faculty Portal</small><h1>Lingua Skills</h1></div></div>
-      <span className="tag">👁 View only</span>
-
+      <span className="tag"><Icon name="eye" style={{ marginRight: 6 }} />View only</span>
       <div className="stats" style={{ marginTop: 16 }}>
-        <StatCard icon="✅" value={done.length} label="Total completed" />
-        <StatCard icon="₹" value={paid.length} label="Total paid" />
-        <StatCard icon="⏳" value={paidNotDone.length} label="Paid but not taken exam" />
-        <StatCard icon="✗" value={records.length - paid.length} label="Not paid" />
+        <StatCard icon="circle-check"      value={done.length}                    label="Total completed" />
+        <StatCard icon="indian-rupee-sign" value={paid.length}                    label="Total paid" />
+        <StatCard icon="hourglass-half"    value={paidNotDone.length}             label="Paid, not taken exam" />
+        <StatCard icon="user-xmark"        value={records.length - paid.length}   label="Not paid" />
       </div>
-
       <div className="row" style={{ marginTop: 16 }}>
-        <input placeholder="Search..." value={search} onChange={(e) => setSearch(e.target.value)} style={{ maxWidth: 320 }} />
+        <div style={{ position: 'relative', maxWidth: 320 }}>
+          <Icon name="search" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--t2)', pointerEvents: 'none' }} />
+          <input placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} style={{ paddingLeft: 36 }} />
+        </div>
       </div>
-
       {loading ? <LoadingSpinner /> : (
         <div className="tw">
           <table>
-            <thead>
-              <tr><th>Reg No.</th><th>Name</th><th>Paid?</th><th>Amount</th><th>Exam Status</th><th>Slot</th><th>Result</th></tr>
-            </thead>
+            <thead><tr><th>Reg No.</th><th>Name</th><th>Paid?</th><th>Amount</th><th>Exam Status</th><th>Slot</th><th>Result</th></tr></thead>
             <tbody>
               {records.length === 0 && <tr><td colSpan={7} style={{ textAlign: 'center', color: 'var(--t2)' }}>No records yet</td></tr>}
-              {records.map((r) => (
+              {records.map(r => (
                 <tr key={r.registerNo}>
                   <td>{r.registerNo}</td><td>{r.studentName || '—'}</td>
                   <td><span className={`tag ${r.paid === 'Yes' ? 'ok' : 'err'}`}>{r.paid}</span></td>

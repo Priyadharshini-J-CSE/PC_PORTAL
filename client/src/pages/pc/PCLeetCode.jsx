@@ -3,6 +3,7 @@ import api from '../../api/client';
 import { useToast } from '../../context/ToastContext';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import ImportResult from '../../components/ImportResult';
+import Icon from '../../components/Icon';
 import { ROSTER } from '../../config/roster';
 
 export default function PCLeetCode() {
@@ -17,10 +18,8 @@ export default function PCLeetCode() {
 
   async function load() {
     setLoading(true);
-    try {
-      const res = await api.get('/api/leetcode');
-      setRecords(res.data);
-    } catch { toast('Failed to load LeetCode data', 'error'); }
+    try { const res = await api.get('/api/leetcode'); setRecords(res.data); }
+    catch { toast('Failed to load LeetCode data', 'error'); }
     finally { setLoading(false); }
   }
 
@@ -30,32 +29,23 @@ export default function PCLeetCode() {
     if (!singleReg || !singleUser) { toast('Select register number and enter LeetCode ID', 'error'); return; }
     try {
       await api.post('/api/leetcode', { registerNo: singleReg, leetcodeUsername: singleUser });
-      toast('LeetCode ID saved', 'success');
-      setSingleReg(''); setSingleUser('');
-      load();
+      toast('LeetCode ID saved', 'success'); setSingleReg(''); setSingleUser(''); load();
     } catch (err) { toast(err.response?.data?.error || 'Failed', 'error'); }
   }
 
   async function handleRefresh(registerNo) {
     setRefreshing(r => ({ ...r, [registerNo]: true }));
-    try {
-      await api.post(`/api/leetcode/${registerNo}/refresh`);
-      toast('Refreshed', 'success');
-      load();
-    } catch (err) { toast(err.response?.data?.error || 'Refresh failed', 'error'); }
+    try { await api.post(`/api/leetcode/${registerNo}/refresh`); toast('Refreshed', 'success'); load(); }
+    catch (err) { toast(err.response?.data?.error || 'Refresh failed', 'error'); }
     finally { setRefreshing(r => ({ ...r, [registerNo]: false })); }
   }
 
   async function handleImport(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const fd = new FormData();
-    fd.append('file', file);
+    const file = e.target.files[0]; if (!file) return;
+    const fd = new FormData(); fd.append('file', file);
     try {
       const res = await api.post('/api/leetcode/import', fd);
-      setImportResult(res.data);
-      toast(res.data.message, 'success');
-      load();
+      setImportResult(res.data); toast(res.data.message, 'success'); load();
     } catch (err) { toast(err.response?.data?.error || 'Import failed', 'error'); }
     e.target.value = '';
   }
@@ -72,11 +62,11 @@ export default function PCLeetCode() {
       <div className="top"><div><small>PC Portal</small><h1>LeetCode</h1></div></div>
 
       <div className="box" style={{ marginBottom: 16 }}>
-        <b>Bulk import LeetCode IDs</b>
-        <br /><small>Upload CSV or Excel with columns: <b>Roll No., LeetCode ID</b></small>
+        <b>Bulk import LeetCode IDs</b><br />
+        <small style={{ color: 'var(--t2)' }}>Upload CSV or Excel with columns: <b>Roll No., LeetCode ID</b></small>
         <div className="row">
-          <button className="s" onClick={() => fileRef.current.click()}>⬆ Upload file</button>
-          <button className="s" onClick={downloadTemplate}>⬇ Download template</button>
+          <button className="s" onClick={() => fileRef.current.click()}><Icon name="upload" /> Upload file</button>
+          <button className="s" onClick={downloadTemplate}><Icon name="download" /> Download template</button>
           <input ref={fileRef} type="file" accept=".csv,.xlsx,.xls" style={{ display: 'none' }} onChange={handleImport} />
         </div>
       </div>
@@ -84,21 +74,23 @@ export default function PCLeetCode() {
       <ImportResult result={importResult} onClose={() => setImportResult(null)} />
 
       <details className="box" style={{ marginBottom: 16 }}>
-        <summary style={{ cursor: 'pointer', fontWeight: 600 }}>Add single student</summary>
+        <summary style={{ cursor: 'pointer', fontWeight: 600 }}>
+          <Icon name="plus" style={{ marginRight: 8 }} />Add single student
+        </summary>
         <div className="grid" style={{ marginTop: 12 }}>
           <div>
             <label>Register No.</label>
-            <select value={singleReg} onChange={(e) => setSingleReg(e.target.value)}>
+            <select value={singleReg} onChange={e => setSingleReg(e.target.value)}>
               <option value="">-- Select --</option>
-              {ROSTER.map((r) => <option key={r}>{r}</option>)}
+              {ROSTER.map(r => <option key={r}>{r}</option>)}
             </select>
           </div>
           <div>
             <label>LeetCode Username</label>
-            <input value={singleUser} onChange={(e) => setSingleUser(e.target.value)} placeholder="username" />
+            <input value={singleUser} onChange={e => setSingleUser(e.target.value)} placeholder="username" />
           </div>
         </div>
-        <div className="row"><button onClick={handleAdd}>Add / Update</button></div>
+        <div className="row"><button onClick={handleAdd}><Icon name="plus" /> Add / Update</button></div>
       </details>
 
       {loading ? <LoadingSpinner /> : (
@@ -116,7 +108,7 @@ export default function PCLeetCode() {
               {records.length === 0 && (
                 <tr><td colSpan={13} style={{ textAlign: 'center', color: 'var(--t2)' }}>No LeetCode records yet</td></tr>
               )}
-              {records.map((r) => (
+              {records.map(r => (
                 <tr key={r.registerNo}>
                   <td>{r.registerNo}</td>
                   <td>{r.studentName || '—'}</td>
@@ -133,17 +125,14 @@ export default function PCLeetCode() {
                       {r.fetchStatus || 'never'}
                     </span>
                   </td>
-                  <td style={{ fontSize: '0.75rem' }}>
+                  <td style={{ fontSize: '.75rem' }}>
                     {r.lastFetchedAt ? new Date(r.lastFetchedAt).toLocaleDateString() : '—'}
                   </td>
                   <td>
-                    <button
-                      className="s"
-                      style={{ padding: '4px 10px', fontSize: '0.8rem' }}
+                    <button className="s" style={{ padding: '4px 10px' }}
                       disabled={refreshing[r.registerNo]}
-                      onClick={() => handleRefresh(r.registerNo)}
-                    >
-                      {refreshing[r.registerNo] ? '...' : '↻'}
+                      onClick={() => handleRefresh(r.registerNo)}>
+                      <Icon name="rotate" />
                     </button>
                   </td>
                 </tr>

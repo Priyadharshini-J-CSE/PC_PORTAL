@@ -1,36 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
+import Icon from '../../components/Icon';
 
 const PORTALS = [
-  {
-    id: 'student',
-    icon: '🎓',
-    title: 'Student Portal',
-    desc: 'Login with your roll number. Update your profile, add interview experiences, and track your placement readiness.',
-    color: '#4f46e5',
-    note: 'Login with Roll Number',
-  },
-  {
-    id: 'pc',
-    icon: '🏢',
-    title: 'PC Portal',
-    desc: 'Manage student master data, LeetCode IDs, Lingua Skills records, and view interview submissions.',
-    color: '#C6531B',
-    note: 'Login / Register with Email',
-  },
-  {
-    id: 'faculty',
-    icon: '📚',
-    title: 'Faculty Portal',
-    desc: 'View-only access to student data, LeetCode rankings, interview experiences, and Lingua Skills.',
-    color: '#0891b2',
-    note: 'Login / Register with Email',
-  },
+  { id: 'student', icon: 'user-graduate', title: 'Student Portal',  desc: 'Login with your roll number. Update your profile, add interview experiences, and track your placement readiness.', note: 'Roll Number + Password' },
+  { id: 'pc',      icon: 'building',      title: 'PC Portal',       desc: 'Manage student master data, LeetCode IDs, Lingua Skills records, and view interview submissions.',                  note: 'Email + Password' },
+  { id: 'faculty', icon: 'chalkboard-user', title: 'Faculty Portal', desc: 'View-only access to student data, LeetCode rankings, interview experiences, and Lingua Skills.',                   note: 'Email + Password' },
 ];
 
 export default function PortalSelect() {
   const navigate = useNavigate();
-
   return (
     <>
       <Navbar />
@@ -54,14 +33,16 @@ export default function PortalSelect() {
               onKeyDown={e => e.key === 'Enter' && navigate(`/portal/${p.id}`)}
               style={{ padding: 28 }}
             >
-              <div style={{ fontSize: '2.2rem', marginBottom: 14 }}>{p.icon}</div>
-              <h2 style={{ margin: '0 0 8px', fontSize: '1.25rem' }}>{p.title}</h2>
+              <div style={{ width: 48, height: 48, background: '#FBEDE5', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14, color: 'var(--o)', fontSize: '1.3rem' }}>
+                <Icon name={p.icon} />
+              </div>
+              <h2 style={{ margin: '0 0 8px', fontSize: '1.2rem' }}>{p.title}</h2>
               <p style={{ color: 'var(--t2)', margin: '0 0 18px', fontSize: '.9rem', lineHeight: 1.55 }}>{p.desc}</p>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: '.78rem', color: 'var(--t2)', background: 'var(--mu)', padding: '4px 10px', borderRadius: 999 }}>
                   {p.note}
                 </span>
-                <span style={{ color: 'var(--o)', fontWeight: 700, fontSize: '1.1rem' }}>→</span>
+                <Icon name="arrow-right" style={{ color: 'var(--o)', fontSize: '1rem' }} />
               </div>
             </div>
           ))}
