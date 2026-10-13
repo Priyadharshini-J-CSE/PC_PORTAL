@@ -6,18 +6,19 @@ const LinguaSkills = require('../models/LinguaSkills');
 
 async function pcAnalytics(req, res) {
   try {
-    const [totalStudents, lcCount, profileCount, ivCount, linguaRecords] = await Promise.all([
-      StudentMaster.countDocuments(),
+    const rosterFilter = { registerNo: { $regex: /^24CS\d+$/ }, name: { $exists: true, $ne: '' } };
+
+    const [totalStudents, lcCount, ivCount, linguaRecords, masters] = await Promise.all([
+      StudentMaster.countDocuments(rosterFilter),
       LeetCode.countDocuments({ leetcodeUsername: { $exists: true, $ne: '' } }),
-      StudentProfile.countDocuments(),
       InterviewExperience.countDocuments(),
       LinguaSkills.find().lean(),
+      StudentMaster.find(rosterFilter, { resumeLink: 1, portfolioLink: 1, videoLink: 1 }).lean(),
     ]);
 
-    const profiles = await StudentProfile.find().lean();
-    const withResume = profiles.filter((p) => p.resumeLink).length;
-    const withPortfolio = profiles.filter((p) => p.portfolioLink).length;
-    const withVideo = profiles.filter((p) => p.videoLink).length;
+    const withResume = masters.filter((m) => m.resumeLink).length;
+    const withPortfolio = masters.filter((m) => m.portfolioLink).length;
+    const withVideo = masters.filter((m) => m.videoLink).length;
 
     const paid = linguaRecords.filter((r) => r.paid === 'Yes').length;
     const completed = linguaRecords.filter((r) => r.examStatus === 'Completed').length;

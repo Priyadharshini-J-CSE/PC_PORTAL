@@ -15,10 +15,21 @@ const studentProfileSchema = new mongoose.Schema(
     externalOnlineHackParticipated: { type: Number, default: 0, min: 0 },
     externalOnlineHackWon: { type: Number, default: 0, min: 0 },
     externalInternAttended: { type: String, enum: ['Yes', 'No', ''], default: '' },
-    internPlace: { type: String, trim: true },
-    internMode: { type: String, trim: true },
+    interns: [
+      {
+        internType:    { type: String, trim: true },
+        internPlace:   { type: String, trim: true },
+        internMode:    { type: String, trim: true },
+        internStipend: { type: String, trim: true },
+        internOther:   { type: String, trim: true },
+      }
+    ],
+    // legacy single-intern fields kept for backward compat
+    internType:    { type: String, trim: true },
+    internPlace:   { type: String, trim: true },
+    internMode:    { type: String, trim: true },
     internStipend: { type: String, trim: true },
-    internOther: { type: String, trim: true },
+    internOther:   { type: String, trim: true },
     certName: { type: String, trim: true },
     certLink: { type: String, trim: true },
   },
@@ -31,7 +42,8 @@ const STUDENT_EDITABLE_FIELDS = [
   'internalHackParticipated', 'internalHackWon',
   'externalHackParticipated', 'externalHackWon',
   'externalOnlineHackParticipated', 'externalOnlineHackWon',
-  'externalInternAttended', 'internPlace', 'internMode', 'internStipend', 'internOther',
+  'externalInternAttended', 'interns',
+  'internType', 'internPlace', 'internMode', 'internStipend', 'internOther',
   'certName', 'certLink',
 ];
 

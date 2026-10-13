@@ -80,7 +80,7 @@ function staffLogin(role) {
   };
 }
 
-// PC self-registers only if no PC account exists yet (bootstrap) or via invite
+// PC registers but starts inactive; Admin must approve
 async function pcRegister(req, res) {
   try {
     const email = String(req.body.email || '').trim().toLowerCase();
@@ -90,25 +90,19 @@ async function pcRegister(req, res) {
       return res.status(400).json({ error: 'Valid email and password (min 8 chars) required' });
     }
 
-    const existingCount = await User.countDocuments({ role: 'pc' });
-    if (existingCount > 0) {
-      return res.status(403).json({ error: 'PC registration is closed. Contact the administrator.' });
-    }
-
     const existing = await User.findOne({ email });
     if (existing) return res.status(409).json({ error: 'Email already registered' });
 
     const passwordHash = await bcrypt.hash(password, 12);
-    const user = await User.create({ role: 'pc', email, passwordHash, isActive: true });
-    req.session.user = { id: user._id, role: 'pc', email: user.email };
-    res.status(201).json({ role: 'pc', email: user.email });
+    await User.create({ role: 'pc', email, passwordHash, isActive: false });
+    res.status(201).json({ message: 'Registration submitted. Awaiting admin approval.' });
   } catch (err) {
     console.error('[auth] pcRegister:', err.message);
     res.status(500).json({ error: 'Server error' });
   }
 }
 
-// Faculty registers but starts inactive; PC must activate
+// Faculty registers but starts inactive; Admin must approve
 async function facultyRegister(req, res) {
   try {
     const email = String(req.body.email || '').trim().toLowerCase();
@@ -123,9 +117,37 @@ async function facultyRegister(req, res) {
 
     const passwordHash = await bcrypt.hash(password, 12);
     await User.create({ role: 'faculty', email, passwordHash, isActive: false });
-    res.status(201).json({ message: 'Registration submitted. Awaiting PC approval.' });
+    res.status(201).json({ message: 'Registration submitted. Awaiting admin approval.' });
   } catch (err) {
     console.error('[auth] facultyRegister:', err.message);
+    res.status(500).json({ error: 'Server error' });
+  }
+}
+
+// Admin self-registers only if no admin exists yet (bootstrap)
+async function adminRegister(req, res) {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const { password } = req.body;
+
+    if (!email || !password || password.length < 8) {
+      return res.status(400).json({ error: 'Valid email and password (min 8 chars) required' });
+    }
+
+    const existingCount = await User.countDocuments({ role: 'admin' });
+    if (existingCount > 0) {
+      return res.status(403).json({ error: 'Admin registration is closed.' });
+    }
+
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(409).json({ error: 'Email already registered' });
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const user = await User.create({ role: 'admin', email, passwordHash, isActive: true });
+    req.session.user = { id: user._id, role: 'admin', email: user.email };
+    res.status(201).json({ role: 'admin', email: user.email });
+  } catch (err) {
+    console.error('[auth] adminRegister:', err.message);
     res.status(500).json({ error: 'Server error' });
   }
 }
@@ -151,8 +173,10 @@ module.exports = {
   studentChangePassword,
   pcLogin: staffLogin('pc'),
   facultyLogin: staffLogin('faculty'),
+  adminLogin: staffLogin('admin'),
   pcRegister,
   facultyRegister,
+  adminRegister,
   logout,
   getMe,
 };

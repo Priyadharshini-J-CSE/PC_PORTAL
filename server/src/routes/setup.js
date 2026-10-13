@@ -75,8 +75,9 @@ router.post('/', async (req, res) => {
 
 // GET /api/setup/status — check if setup is needed
 router.get('/status', async (req, res) => {
-  const pcExists = await User.countDocuments({ role: 'pc' });
-  res.json({ setupRequired: pcExists === 0 });
+  const pcExists    = await User.countDocuments({ role: 'pc' });
+  const adminExists = await User.countDocuments({ role: 'admin' });
+  res.json({ setupRequired: pcExists === 0, adminExists: adminExists > 0 });
 });
 
 module.exports = router;

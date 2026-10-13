@@ -17,31 +17,49 @@ router.post('/pc/login', loginLimiter, ctrl.pcLogin);
 router.post('/pc/register', ctrl.pcRegister);
 router.post('/faculty/login', loginLimiter, ctrl.facultyLogin);
 router.post('/faculty/register', ctrl.facultyRegister);
+router.post('/admin/login', loginLimiter, ctrl.adminLogin);
+router.post('/admin/register', ctrl.adminRegister);
 router.post('/logout', ctrl.logout);
 router.get('/me', ctrl.getMe);
 
-// PC approves faculty accounts
-router.patch('/faculty/:id/approve', requireRole('pc'), async (req, res) => {
+// Admin: list all staff accounts (faculty + pc)
+router.get('/staff', requireRole('admin'), async (req, res) => {
   try {
     const User = require('../models/User');
-    const user = await User.findOneAndUpdate(
-      { _id: req.params.id, role: 'faculty' },
-      { isActive: true },
-      { new: true }
-    );
-    if (!user) return res.status(404).json({ error: 'Faculty account not found' });
-    res.json({ message: 'Faculty account approved', email: user.email });
+    const staff = await User.find({ role: { $in: ['faculty', 'pc'] } }).select('-passwordHash').sort({ role: 1, createdAt: 1 });
+    res.json(staff);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// PC lists pending faculty
-router.get('/faculty/pending', requireRole('pc'), async (req, res) => {
+// Admin: approve (activate) a staff account
+router.patch('/staff/:id/approve', requireRole('admin'), async (req, res) => {
   try {
     const User = require('../models/User');
-    const pending = await User.find({ role: 'faculty', isActive: false }).select('-passwordHash');
-    res.json(pending);
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.id, role: { $in: ['faculty', 'pc'] } },
+      { isActive: true },
+      { new: true }
+    );
+    if (!user) return res.status(404).json({ error: 'Account not found' });
+    res.json({ message: 'Account approved', email: user.email });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Admin: deactivate a staff account
+router.patch('/staff/:id/deactivate', requireRole('admin'), async (req, res) => {
+  try {
+    const User = require('../models/User');
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.id, role: { $in: ['faculty', 'pc'] } },
+      { isActive: false },
+      { new: true }
+    );
+    if (!user) return res.status(404).json({ error: 'Account not found' });
+    res.json({ message: 'Account deactivated', email: user.email });
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
   }

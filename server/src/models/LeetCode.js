@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const leetcodeSchema = new mongoose.Schema(
   {
     registerNo: { type: String, required: true, unique: true, uppercase: true, trim: true },
+    rollNo: { type: String, trim: true },
+    name: { type: String, trim: true },
     leetcodeUsername: { type: String, trim: true },
     globalRank: { type: Number },
     contestRating: { type: Number },

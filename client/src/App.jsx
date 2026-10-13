@@ -13,6 +13,9 @@ import PCLeetCode from './pages/pc/PCLeetCode';
 import PCInterviews from './pages/pc/PCInterviews';
 import PCLingua from './pages/pc/PCLingua';
 
+import AdminLayout from './layouts/AdminLayout';
+import AdminApprovals from './pages/admin/AdminApprovals';
+
 import FacultyLayout from './layouts/FacultyLayout';
 import FacultyDashboard from './pages/faculty/FacultyDashboard';
 import FacultyStudents from './pages/faculty/FacultyStudents';
@@ -70,6 +73,11 @@ function AppRoutes() {
         <Route path="dashboard" element={<StudentDashboard />} />
         <Route path="profile" element={<StudentProfile />} />
         <Route path="interviews" element={<StudentInterviews />} />
+      </Route>
+
+      <Route path="/admin" element={<ProtectedRoute role="admin"><AdminLayout /></ProtectedRoute>}>
+        <Route index element={<Navigate to="/admin/approvals" replace />} />
+        <Route path="approvals" element={<AdminApprovals />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />

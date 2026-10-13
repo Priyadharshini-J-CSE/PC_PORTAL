@@ -3,9 +3,10 @@ import Navbar from '../../components/Navbar';
 import Icon from '../../components/Icon';
 
 const PORTALS = [
-  { id: 'student', icon: 'user-graduate', title: 'Student Portal',  desc: 'Login with your roll number. Update your profile, add interview experiences, and track your placement readiness.', note: 'Roll Number + Password' },
-  { id: 'pc',      icon: 'building',      title: 'PC Portal',       desc: 'Manage student master data, LeetCode IDs, Lingua Skills records, and view interview submissions.',                  note: 'Email + Password' },
-  { id: 'faculty', icon: 'chalkboard-user', title: 'Faculty Portal', desc: 'View-only access to student data, LeetCode rankings, interview experiences, and Lingua Skills.',                   note: 'Email + Password' },
+  { id: 'student', icon: 'user-graduate',   title: 'Student Portal', desc: 'Login with your roll number. Update your profile, add interview experiences, and track your placement readiness.', note: 'Roll Number + Password' },
+  { id: 'pc',      icon: 'building',         title: 'PC Portal',      desc: 'Manage student master data, LeetCode IDs, Lingua Skills records, and view interview submissions.',                  note: 'Email + Password' },
+  { id: 'faculty', icon: 'chalkboard-user',  title: 'Faculty Portal', desc: 'View-only access to student data, LeetCode rankings, interview experiences, and Lingua Skills.',                   note: 'Email + Password' },
+  { id: 'admin',   icon: 'shield-halved',    title: 'Admin Portal',   desc: 'Approve and manage faculty and PC staff accounts.',                                                                   note: 'Email + Password' },
 ];
 
 export default function PortalSelect() {
@@ -23,7 +24,7 @@ export default function PortalSelect() {
           </p>
         </div>
 
-        <div className="cards">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 20, maxWidth: 760, margin: '0 auto' }}>
           {PORTALS.map(p => (
             <div
               key={p.id}

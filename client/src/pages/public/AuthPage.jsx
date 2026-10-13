@@ -8,8 +8,9 @@ const ROLE_META = {
   student: { label: 'Student Portal', color: '#4f46e5', icon: '🎓' },
   pc:      { label: 'PC Portal',      color: '#C6531B', icon: '🏢' },
   faculty: { label: 'Faculty Portal', color: '#0891b2', icon: '📚' },
+  admin:   { label: 'Admin Portal',   color: '#16a34a', icon: '🔐' },
 };
-const REDIRECTS = { student: '/student/dashboard', pc: '/pc/dashboard', faculty: '/faculty/dashboard' };
+const REDIRECTS = { student: '/student/dashboard', pc: '/pc/dashboard', faculty: '/faculty/dashboard', admin: '/admin/approvals' };
 
 export default function AuthPage() {
   const { role } = useParams();
@@ -19,11 +20,11 @@ export default function AuthPage() {
 
   const meta = ROLE_META[role];
   const isStudent = role === 'student';
-  const isPC = role === 'pc';
+  const isAdmin = role === 'admin';
 
-  const [tab, setTab] = useState('login');          // 'login' | 'register'
-  const [setupRequired, setSetupRequired] = useState(false);
-  const [checking, setChecking] = useState(isPC);
+  const [tab, setTab] = useState('login');
+  const [adminExists, setAdminExists] = useState(true); // assume exists until checked
+  const [checking, setChecking] = useState(isAdmin);
 
   // Form fields
   const [identifier, setIdentifier] = useState(''); // roll no or email
@@ -32,16 +33,17 @@ export default function AuthPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Check if first-time PC setup needed
+  // For admin: check if admin account already exists
   useEffect(() => {
-    if (!isPC) return;
+    if (!isAdmin) return;
     api.get('/api/setup/status')
       .then(r => {
-        if (r.data.setupRequired) { setSetupRequired(true); setTab('register'); }
+        setAdminExists(r.data.adminExists);
+        if (!r.data.adminExists) setTab('register'); // first time → show register
       })
       .catch(() => {})
       .finally(() => setChecking(false));
-  }, [isPC]);
+  }, [isAdmin]);
 
   function reset() { setError(''); setPassword(''); setConfirmPw(''); }
 
@@ -67,27 +69,19 @@ export default function AuthPage() {
 
       } else {
         // Register
-        if (isPC && setupRequired) {
-          // First-time setup — creates PC + all students
-          const res = await api.post('/api/setup', {
-            pcEmail: identifier.trim().toLowerCase(),
-            pcPassword: password,
-          });
-          toast(res.data.message, 'success');
-          setUser({ role: 'pc', email: identifier.trim().toLowerCase() });
-          navigate('/pc/dashboard');
+        const res = await api.post(`/api/auth/${role}/register`, {
+          email: identifier.trim().toLowerCase(),
+          password,
+        });
+        if (role === 'faculty' || role === 'pc') {
+          toast('Registration submitted. Awaiting admin approval before you can log in.', 'info');
+          setTab('login'); reset();
+        } else if (role === 'admin') {
+          setUser(res.data);
+          navigate(REDIRECTS['admin']);
         } else {
-          const res = await api.post(`/api/auth/${role}/register`, {
-            email: identifier.trim().toLowerCase(),
-            password,
-          });
-          if (role === 'faculty') {
-            toast('Registration submitted. Awaiting PC approval before you can log in.', 'info');
-            setTab('login'); reset();
-          } else {
-            setUser(res.data);
-            navigate(REDIRECTS[role]);
-          }
+          setUser(res.data);
+          navigate(REDIRECTS[role]);
         }
       }
     } catch (err) {
@@ -130,23 +124,19 @@ export default function AuthPage() {
           </div>
         </div>
 
-        {/* Tabs — only for PC and Faculty */}
-        {!isStudent && !(isPC && setupRequired) && (
+        {/* Tabs — only for PC, Faculty; Admin only if no admin exists yet */}
+        {(!isStudent && !(isAdmin && adminExists)) && (
           <div className="auth-tabs" style={{ marginTop: 18 }}>
-            <button type="button" className={`auth-tab ${tab === 'login' ? 'active' : ''}`} onClick={() => { setTab('login'); reset(); }}>
-              Login
-            </button>
-            <button type="button" className={`auth-tab ${tab === 'register' ? 'active' : ''}`} onClick={() => { setTab('register'); reset(); }}>
-              Register
-            </button>
+            <button type="button" className={`auth-tab ${tab === 'login' ? 'active' : ''}`} onClick={() => { setTab('login'); reset(); }}>Login</button>
+            <button type="button" className={`auth-tab ${tab === 'register' ? 'active' : ''}`} onClick={() => { setTab('register'); reset(); }}>Register</button>
           </div>
         )}
 
-        {/* First-time setup banner */}
-        {isPC && setupRequired && (
+        {/* First-time admin setup banner */}
+        {isAdmin && !adminExists && (
           <div style={{ background: '#FBEDE5', borderRadius: 12, padding: '12px 16px', margin: '16px 0', fontSize: '.88rem' }}>
             <b>First-time setup</b><br />
-            No PC account exists yet. Create the administrator account — this will also provision all student accounts automatically.
+            No admin account exists yet. Create the admin account to manage staff approvals.
           </div>
         )}
 
@@ -189,10 +179,7 @@ export default function AuthPage() {
           {error && <div className="msg" style={{ marginTop: 10 }}>{error}</div>}
 
           <button type="submit" disabled={loading} style={{ width: '100%', marginTop: 18, padding: '11px', fontSize: '1rem', justifyContent: 'center' }}>
-            {loading ? 'Please wait...' : (
-              isPC && setupRequired ? 'Create Account & Setup Portal' :
-              tab === 'login' ? `Login to ${meta.label}` : `Register`
-            )}
+            {loading ? 'Please wait...' : tab === 'login' ? `Login to ${meta.label}` : 'Register'}
           </button>
         </form>
 
@@ -202,14 +189,9 @@ export default function AuthPage() {
             Use your roll number (e.g. <b>24CS141</b>) and the initial password provided by your Placement Coordinator. You will be asked to set a new password on first login.
           </p>
         )}
-        {role === 'faculty' && tab === 'register' && (
+        {(role === 'faculty' || role === 'pc') && tab === 'register' && (
           <p style={{ fontSize: '.82rem', color: 'var(--t2)', marginTop: 12 }}>
-            Faculty accounts require PC approval before login is enabled.
-          </p>
-        )}
-        {isPC && !setupRequired && tab === 'register' && (
-          <p style={{ fontSize: '.82rem', color: 'var(--t2)', marginTop: 12 }}>
-            Additional PC accounts can only be created if no PC account exists yet.
+            Accounts require admin approval before login is enabled.
           </p>
         )}
       </div>

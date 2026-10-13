@@ -2,17 +2,15 @@ const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema(
   {
-    role: { type: String, enum: ['student', 'pc', 'faculty'], required: true },
+    role: { type: String, enum: ['student', 'pc', 'faculty', 'admin'], required: true },
     // Students use registerNo; PC/Faculty use email
     registerNo: {
       type: String,
-      sparse: true,
       uppercase: true,
       trim: true,
     },
     email: {
       type: String,
-      sparse: true,
       lowercase: true,
       trim: true,
     },

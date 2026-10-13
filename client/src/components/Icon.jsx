@@ -8,6 +8,7 @@ import {
   faCircleCheck, faHourglassHalf, faIndianRupeeSign, faTriangleExclamation,
   faChartLine, faArrowUp, faArrowDown, faRotate, faUserXmark,
   faPen, faFloppyDisk, faSearch, faFilter, faHome, faInfoCircle,
+  faChevronDown, faTable, faChartBar,
 } from '@fortawesome/free-solid-svg-icons';
 
 // Map of name -> icon
@@ -52,6 +53,9 @@ const ICONS = {
   filter: faFilter,
   home: faHome,
   info: faInfoCircle,
+  'chevron-down': faChevronDown,
+  table: faTable,
+  'chart-bar': faChartBar,
 };
 
 export default function Icon({ name, style, className }) {
